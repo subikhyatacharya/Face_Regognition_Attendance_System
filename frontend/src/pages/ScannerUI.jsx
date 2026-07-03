@@ -46,12 +46,12 @@ const ScannerUI = () => {
       setStatus('SUCCESS');
       setSubMessage('Identity verified.');
       
-      // VOICE FEEDBACK ADDED HERE
-      const speechText = isDuplicate 
-        ? `Attendance already marked for ${userName}`
-        : `Attendance marked for ${userName}`;
-      const utterance = new SpeechSynthesisUtterance(speechText);
-      window.speechSynthesis.speak(utterance);
+      // // VOICE FEEDBACK ADDED HERE
+      // const speechText = isDuplicate 
+      //    ? `Attendance already marked for ${userName}`
+      //   : `Attendance marked for ${userName}`;
+      // const utterance = new SpeechSynthesisUtterance(speechText);
+      // window.speechSynthesis.speak(utterance);
       
       const newScan = {
         name: userName,
@@ -89,7 +89,7 @@ const ScannerUI = () => {
     if (status === 'AUTHENTICATING...') {
       interval = setInterval(() => {
         captureAndSend();
-      }, 3000);
+      }, 10000);
     }
     return () => clearInterval(interval);
   }, [status, captureAndSend]);
@@ -117,6 +117,7 @@ const ScannerUI = () => {
                 screenshotFormat="image/jpeg" 
                 className="webcam-feed"
                 videoConstraints={{ facingMode: "user" }} 
+                mirrored={false}  
               />
               <div className="scanner-overlay">
                 <div className="corner top-left"></div>
