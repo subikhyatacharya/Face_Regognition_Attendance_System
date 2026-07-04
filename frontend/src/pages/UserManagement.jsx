@@ -17,16 +17,25 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
+  const authHeader = () => ({
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  });
+
   const fetchUsers = async () => {
     try {
       setLoading(true);
       // Assuming backend is running on standard port, but using relative paths if proxied
       // For Vite, usually api requests need to hit the exact backend URL. Let's assume port 5000 as typical.
-      const response = await axios.get('http://localhost:5000/api/users/');
+      const response = await axios.get('http://localhost:5000/api/users/', authHeader());
       setUsers(response.data);
       setError(null);
     } catch (err) {
       console.error("Error fetching users:", err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
       setError("Failed to load users. Please ensure the backend is running.");
     } finally {
       setLoading(false);
@@ -53,7 +62,7 @@ const UserManagement = () => {
         full_name: editingUser.full_name,
         department: editingUser.department,
         email: editingUser.email
-      });
+      }, authHeader());
       setEditingUser(null);
       fetchUsers(); // Refresh the list
     } catch (err) {
@@ -65,7 +74,7 @@ const UserManagement = () => {
   const handleDelete = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
       try {
-        await axios.delete(`http://localhost:5000/api/users/${userId}`);
+        await axios.delete(`http://localhost:5000/api/users/${userId}`, authHeader());
         fetchUsers(); // Refresh the list
       } catch (err) {
         console.error("Error deleting user:", err);
@@ -85,7 +94,7 @@ const UserManagement = () => {
   const handleAddSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/users/register', newUser);
+      await axios.post('http://localhost:5000/api/users/register', newUser, authHeader());
       setAddingUser(false);
       setNewUser({ db_id: '', student_id: '', full_name: '', department: '', email: '' });
       fetchUsers(); // Refresh the list

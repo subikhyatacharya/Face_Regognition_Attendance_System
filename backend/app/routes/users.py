@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services.user_service import register_student
+from app.utils.security import token_required
 
 users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 
@@ -23,11 +24,13 @@ def register():
 from app.models.user import get_all_users, update_user, delete_user
 
 @users_bp.route('/', methods=['GET'])
+@token_required
 def get_users():
     users = get_all_users()
     return jsonify(users), 200
 
 @users_bp.route('/<int:user_id>', methods=['PUT'])
+@token_required
 def edit_user(user_id):
     data = request.get_json()
     if not data:
@@ -48,6 +51,7 @@ def edit_user(user_id):
         return jsonify({"error": "Failed to update user. Duplicate ID or Email?"}), 400
 
 @users_bp.route('/<int:user_id>', methods=['DELETE'])
+@token_required
 def remove_user(user_id):
     success = delete_user(user_id)
     if success:
