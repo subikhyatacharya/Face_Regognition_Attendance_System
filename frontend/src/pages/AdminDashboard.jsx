@@ -82,6 +82,9 @@ const AdminDashboard = () => {
           <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
             Settings
           </button>
+          <button onClick={() => window.location.href='/admin/users'}>
+            User Management
+          </button>
         </nav>
         <div className="sidebar-footer">
           <button className="logout-btn">Log Out</button>
